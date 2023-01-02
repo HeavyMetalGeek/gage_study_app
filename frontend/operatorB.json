@@ -1,0 +1,242 @@
+[
+    {
+        "name": "b011",
+        "part": "01",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 2.56,
+        "nominal": 3
+    },
+    {
+        "name": "b012",
+        "part": "01",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 2.22,
+        "nominal": 3
+    },
+    {
+        "name": "b013",
+        "part": "01",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 2.14,
+        "nominal": 3
+    },
+    {
+        "name": "b021",
+        "part": "02",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 2.13,
+        "nominal": 3
+    },
+    {
+        "name": "b022",
+        "part": "02",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 2.36,
+        "nominal": 3
+    },
+    {
+        "name": "b023",
+        "part": "02",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 2.34,
+        "nominal": 3
+    },
+    {
+        "name": "b031",
+        "part": "03",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 2.41,
+        "nominal": 3
+    },
+    {
+        "name": "b032",
+        "part": "03",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 2.36,
+        "nominal": 3
+    },
+    {
+        "name": "b033",
+        "part": "03",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 2.33,
+        "nominal": 3
+    },
+    {
+        "name": "b041",
+        "part": "04",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 4.12,
+        "nominal": 3
+    },
+    {
+        "name": "b042",
+        "part": "04",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 4.36,
+        "nominal": 3
+    },
+    {
+        "name": "b043",
+        "part": "04",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 4.56,
+        "nominal": 3
+    },
+    {
+        "name": "b051",
+        "part": "05",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 3.47,
+        "nominal": 3
+    },
+    {
+        "name": "b052",
+        "part": "05",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 3.89,
+        "nominal": 3
+    },
+    {
+        "name": "b053",
+        "part": "05",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 3.78,
+        "nominal": 3
+    },
+    {
+        "name": "b061",
+        "part": "06",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 2.11,
+        "nominal": 3
+    },
+    {
+        "name": "b062",
+        "part": "06",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 2.23,
+        "nominal": 3
+    },
+    {
+        "name": "b063",
+        "part": "06",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 2.12,
+        "nominal": 3
+    },
+    {
+        "name": "b071",
+        "part": "07",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 2.22,
+        "nominal": 3
+    },
+    {
+        "name": "b072",
+        "part": "07",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 2.23,
+        "nominal": 3
+    },
+    {
+        "name": "b073",
+        "part": "07",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 2.24,
+        "nominal": 3
+    },
+    {
+        "name": "b081",
+        "part": "08",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 5.36,
+        "nominal": 3
+    },
+    {
+        "name": "b082",
+        "part": "08",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 5.47,
+        "nominal": 3
+    },
+    {
+        "name": "b083",
+        "part": "08",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 5.87,
+        "nominal": 3
+    },
+    {
+        "name": "b091",
+        "part": "09",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 2.44,
+        "nominal": 3
+    },
+    {
+        "name": "b092",
+        "part": "09",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 1.80,
+        "nominal": 3
+    },
+    {
+        "name": "b093",
+        "part": "09",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 1.72,
+        "nominal": 3
+    },
+    {
+        "name": "b101",
+        "part": "10",
+        "operator": "B",
+        "replicate": 1,
+        "measured": 4.65,
+        "nominal": 3
+    },
+    {
+        "name": "b102",
+        "part": "10",
+        "operator": "B",
+        "replicate": 2,
+        "measured": 3.89,
+        "nominal": 3
+    },
+    {
+        "name": "b103",
+        "part": "10",
+        "operator": "B",
+        "replicate": 3,
+        "measured": 4.00,
+        "nominal": 3
+    }
+]

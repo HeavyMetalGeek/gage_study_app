@@ -15,3 +15,7 @@ pub use gage_eval_table::GageEvalTableView;
 pub use statistics::Statistics;
 pub use study_plots::{PlotType, StudyPlots};
 pub use varcomp_table::VarCompTableView;
+
+static DEMO_DATA_A: &'static str = include_str!("../operatorA.json");
+static DEMO_DATA_B: &'static str = include_str!("../operatorB.json");
+static DEMO_DATA_C: &'static str = include_str!("../operatorC.json");

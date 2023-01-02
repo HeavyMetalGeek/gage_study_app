@@ -3,6 +3,7 @@ use crate::{
 };
 use gage_study::{anova::Anova, data::Data, dataset::DataSet, study_evaluation::StudyEvaluation};
 use rfd;
+use egui::{Color32, RichText};
 
 pub enum Message {
     FileOpen(String, String),
@@ -116,14 +117,62 @@ impl eframe::App for GageStudyApp {
         });
 
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
+            // UI elements
             ui.heading("File Upload");
             ui.checkbox(&mut self.concatenate_data, "Concatenate Files");
             let open_button = ui.add(egui::Button::new("Open..."));
+            let demo_button = ui.add(egui::Button::new("Load Demo Data..."));
             ui.separator();
             ui.heading("Open Data Files: ");
             for f in self.open_files.iter() {
                 ui.label(f.clone());
             }
+            ui.separator();
+            ui.horizontal(|ui| {
+                ui.label("Tolerance: ");
+                ui.add(
+                    egui::DragValue::new(&mut self.tolerance)
+                        .speed(0.1)
+                        .clamp_range(0..=99),
+                );
+            });
+            ui.horizontal(|ui| {
+                ui.label("Process Variation: ");
+                ui.add(
+                    egui::DragValue::new(&mut self.process_variation)
+                        .speed(0.1)
+                        .clamp_range(0..=99),
+                );
+            });
+            ui.vertical(|ui| {
+                ui.set_enabled(!self.dataset.is_empty());
+                if ui.button("Calculate...").clicked() {
+                    self.gage_dataset = match self.dataset.len() {
+                        len if len > 0 => Some(DataSet::from_data("ui_data", &self.dataset)),
+                        _ => None,
+                    };
+                    self.anova = match &self.gage_dataset {
+                        Some(gds) => Some(Anova::from_data(gds)),
+                        None => None,
+                    };
+                    self.study_evaluation = match &self.anova {
+                        Some(a) => Some(
+                            StudyEvaluation::from_anova(a)
+                                .with_tolerance(self.tolerance)
+                                .with_process_variation(self.process_variation),
+                        ),
+                        None => None,
+                    };
+                }
+                if ui.button("Clear data...").clicked() {
+                    self.dataset.clear();
+                    self.gage_dataset = None;
+                    self.open_files.clear();
+                    self.anova = None;
+                    self.study_evaluation = None;
+                }
+            });
+            // Event handling
             if open_button.clicked() {
                 let task = rfd::AsyncFileDialog::new()
                     .add_filter("CSV files", &["csv"])
@@ -144,47 +193,31 @@ impl eframe::App for GageStudyApp {
                     }
                 });
             }
-            ui.separator();
-            ui.horizontal(|ui| {
-                ui.label("Tolerance: ");
-                ui.add(
-                    egui::DragValue::new(&mut self.tolerance)
-                        .speed(0.1)
-                        .clamp_range(0..=99),
-                );
-            });
-            ui.horizontal(|ui| {
-                ui.label("Process Variation: ");
-                ui.add(
-                    egui::DragValue::new(&mut self.process_variation)
-                        .speed(0.1)
-                        .clamp_range(0..=99),
-                );
-            });
-            if ui.button("Calculate...").clicked() {
-                self.gage_dataset = match self.dataset.len() {
-                    len if len > 0 => Some(DataSet::from_data("ui_data", &self.dataset)),
-                    _ => None,
-                };
-                self.anova = match &self.gage_dataset {
-                    Some(gds) => Some(Anova::from_data(gds)),
-                    None => None,
-                };
-                self.study_evaluation = match &self.anova {
-                    Some(a) => Some(
-                        StudyEvaluation::from_anova(a)
-                            .with_tolerance(self.tolerance)
-                            .with_process_variation(self.process_variation),
-                    ),
-                    None => None,
-                };
-            }
-            if ui.button("Clear data...").clicked() {
-                self.dataset.clear();
-                self.gage_dataset = None;
-                self.open_files.clear();
-                self.anova = None;
-                self.study_evaluation = None;
+            if demo_button.clicked() {
+                let message_sender = self.message_channel.0.clone();
+                execute(async move {
+                    let file_name = "OperatorA.json".to_string();
+                    let file_content = crate::DEMO_DATA_A;
+                    message_sender
+                        .send(Message::FileOpen(file_name, file_content.to_string()))
+                        .ok();
+                });
+                let message_sender = self.message_channel.0.clone();
+                execute(async move {
+                    let file_name = "OperatorB.json".to_string();
+                    let file_content = crate::DEMO_DATA_B;
+                    message_sender
+                        .send(Message::FileOpen(file_name, file_content.to_string()))
+                        .ok();
+                });
+                let message_sender = self.message_channel.0.clone();
+                execute(async move {
+                    let file_name = "OperatorC.json".to_string();
+                    let file_content = crate::DEMO_DATA_C;
+                    message_sender
+                        .send(Message::FileOpen(file_name, file_content.to_string()))
+                        .ok();
+                });
             }
         });
 
@@ -192,9 +225,28 @@ impl eframe::App for GageStudyApp {
             // The central panel the region left after adding TopPanel's and SidePanel's
             egui::warn_if_debug_build(ui);
             ui.heading("Gage Study Analysis");
+            ui.label("");
+            ui.label("To process demo data:");
+            ui.label("\t1. Click the \"Load Demo Data...\" button");
+            ui.label("\t2. Click the \"Calculate...\" button");
+            ui.label("");
+            ui.label("JSON data format:");
+            ui.label(RichText::new(r#"
+{
+    "name": string,
+    "part": string,
+    "operator: string,
+    "replicate": integer,
+    "measured": float,
+    "nominal": float
+}"#
+                )
+                .monospace()
+                .color(Color32::GREEN)
+                .background_color(Color32::TRANSPARENT));
         });
 
-        DataTableView::default().show(ctx, &self.dataset, &mut true);
+        DataTableView::default().show(ctx, &self.dataset, &mut (!self.dataset.is_empty()));
         AnovaTableView::default().show(ctx, &self.anova, &mut self.anova.is_some());
         VarCompTableView::default().show(
             ctx,

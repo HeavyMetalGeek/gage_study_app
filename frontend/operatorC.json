@@ -1,0 +1,242 @@
+[
+    {
+        "name": "c011",
+        "part": "01",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 2.56,
+        "nominal": 3
+    },
+    {
+        "name": "c012",
+        "part": "01",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 2.22,
+        "nominal": 3
+    },
+    {
+        "name": "c013",
+        "part": "01",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 2.15,
+        "nominal": 3
+    },
+    {
+        "name": "c021",
+        "part": "02",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 2.56,
+        "nominal": 3
+    },
+    {
+        "name": "c022",
+        "part": "02",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 2.12,
+        "nominal": 3
+    },
+    {
+        "name": "c023",
+        "part": "02",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 2.32,
+        "nominal": 3
+    },
+    {
+        "name": "c031",
+        "part": "03",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 2.12,
+        "nominal": 3
+    },
+    {
+        "name": "c032",
+        "part": "03",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 2.45,
+        "nominal": 3
+    },
+    {
+        "name": "c033",
+        "part": "03",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 2.33,
+        "nominal": 3
+    },
+    {
+        "name": "c041",
+        "part": "04",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 4.25,
+        "nominal": 3
+    },
+    {
+        "name": "c042",
+        "part": "04",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 4.36,
+        "nominal": 3
+    },
+    {
+        "name": "c043",
+        "part": "04",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 4.22,
+        "nominal": 3
+    },
+    {
+        "name": "c051",
+        "part": "05",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 3.47,
+        "nominal": 3
+    },
+    {
+        "name": "c052",
+        "part": "05",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 3.89,
+        "nominal": 3
+    },
+    {
+        "name": "c053",
+        "part": "05",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 3.75,
+        "nominal": 3
+    },
+    {
+        "name": "c061",
+        "part": "06",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 2.11,
+        "nominal": 3
+    },
+    {
+        "name": "c062",
+        "part": "06",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 2.23,
+        "nominal": 3
+    },
+    {
+        "name": "c063",
+        "part": "06",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 2.12,
+        "nominal": 3
+    },
+    {
+        "name": "c071",
+        "part": "07",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 2.27,
+        "nominal": 3
+    },
+    {
+        "name": "c072",
+        "part": "07",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 2.26,
+        "nominal": 3
+    },
+    {
+        "name": "c073",
+        "part": "07",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 2.22,
+        "nominal": 3
+    },
+    {
+        "name": "c081",
+        "part": "08",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 5.21,
+        "nominal": 3
+    },
+    {
+        "name": "c082",
+        "part": "08",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 5.36,
+        "nominal": 3
+    },
+    {
+        "name": "c083",
+        "part": "08",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 5.54,
+        "nominal": 3
+    },
+    {
+        "name": "c091",
+        "part": "09",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 2.44,
+        "nominal": 3
+    },
+    {
+        "name": "c092",
+        "part": "09",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 1.80,
+        "nominal": 3
+    },
+    {
+        "name": "c093",
+        "part": "09",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 1.72,
+        "nominal": 3
+    },
+    {
+        "name": "c101",
+        "part": "10",
+        "operator": "C",
+        "replicate": 1,
+        "measured": 4.12,
+        "nominal": 3
+    },
+    {
+        "name": "c102",
+        "part": "10",
+        "operator": "C",
+        "replicate": 2,
+        "measured": 3.25,
+        "nominal": 3
+    },
+    {
+        "name": "c103",
+        "part": "10",
+        "operator": "C",
+        "replicate": 3,
+        "measured": 3.69,
+        "nominal": 3
+    }
+]
