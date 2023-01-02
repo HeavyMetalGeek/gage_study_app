@@ -44,7 +44,7 @@ impl Default for GageStudyApp {
             dataset: Vec::new(),
             gage_dataset: None,
             message_channel: std::sync::mpsc::channel(),
-            concatenate_data: false,
+            concatenate_data: true,
             tolerance: 1.0,
             process_variation: 5.15,
             refresh_plot: false,
