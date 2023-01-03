@@ -194,6 +194,7 @@ impl eframe::App for GageStudyApp {
                 });
             }
             if demo_button.clicked() {
+                self.concatenate_data = true;
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
                     let file_name = "OperatorA.json".to_string();
