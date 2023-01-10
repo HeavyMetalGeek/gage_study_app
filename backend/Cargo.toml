@@ -10,4 +10,4 @@ axum = "0.6.1"
 axum-extra = { version = "0.4.2", features = ["spa"] }
 hyper = { version = "0.14.23", features = ["full"] }
 tokio = { version = "1.23.0", features = ["full"] }
-tower = "0.4.13"
+tower = { version = "0.4.13", features = ["limit"] }
