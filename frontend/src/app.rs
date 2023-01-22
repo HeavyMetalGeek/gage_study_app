@@ -1,27 +1,32 @@
 use crate::{
     AnovaTableView, DataTableView, GageEvalTableView, PlotType, StudyPlots, VarCompTableView,
 };
+use egui::{Color32, RichText};
 use gage_study::{anova::Anova, data::Data, dataset::DataSet, study_evaluation::StudyEvaluation};
 use rfd;
-use egui::{Color32, RichText};
+use std::path::Path;
 
 pub enum Message {
-    FileOpen(String, String),
+    FileOpen(FileInfo),
+    #[allow(dead_code)]
+    LogFile(Vec<u8>),
 }
 
-/// We derive Deserialize/Serialize so we can persist app state on shutdown.
+pub struct FileInfo {
+    pub name: String,
+    pub content: Vec<Data>,
+}
+
 #[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)] // if we add new fields, give them default values when deserializing old state
+// if we add new fields, give them default values when deserializing old state
+#[serde(default)]
 pub struct GageStudyApp {
-    // Example stuff:
     label: String,
     dataset: Vec<Data>,
     concatenate_data: bool,
     tolerance: f64,
     process_variation: f64,
     refresh_plot: bool,
-
-    // this how you opt-out of serialization of a member
     #[serde(skip)]
     gage_dataset: Option<DataSet>,
     #[serde(skip)]
@@ -35,6 +40,8 @@ pub struct GageStudyApp {
     anova: Option<Anova>,
     #[serde(skip)]
     study_evaluation: Option<StudyEvaluation>,
+    #[serde(skip)]
+    msg: Vec<u8>,
 }
 
 impl Default for GageStudyApp {
@@ -51,50 +58,42 @@ impl Default for GageStudyApp {
             open_files: Vec::new(),
             anova: None,
             study_evaluation: None,
+            msg: Vec::new(),
         }
     }
 }
 
 impl GageStudyApp {
-    /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // This is also where you can customize the look and feel of egui using
-        // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
-
-        // Load previous app state (if any).
-        // Note that you must enable the `persistence` feature for this to work.
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
-
         Default::default()
     }
 }
 
 impl eframe::App for GageStudyApp {
-    /// Called by the frame work to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
     }
 
-    /// Called each time the UI needs repainting, which may be many times per second.
-    /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         ctx.request_repaint();
         loop {
             match self.message_channel.1.try_recv() {
                 Ok(msg) => {
                     match msg {
-                        Message::FileOpen(n, d) => {
-                            let content: Vec<Data> =
-                                serde_json::from_str(&d).expect("Failed to deserialize");
+                        Message::FileOpen(f) => {
                             if self.concatenate_data {
-                                self.dataset.extend_from_slice(&content);
-                                self.open_files.push(n);
+                                self.dataset.extend(f.content);
+                                self.open_files.push(f.name);
                             } else {
-                                self.dataset = content;
-                                self.open_files = vec![n];
+                                self.dataset = f.content;
+                                self.open_files = vec![f.name];
                             };
+                        }
+                        Message::LogFile(bytes) => {
+                            self.msg = bytes;
                         }
                     };
                 }
@@ -106,7 +105,6 @@ impl eframe::App for GageStudyApp {
 
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
@@ -185,14 +183,21 @@ impl eframe::App for GageStudyApp {
                     let file = task.await;
 
                     if let Some(file) = file {
-                        let file_content =
-                            String::from_utf8(file.read().await).expect("Could not read file");
+                        let file_content = file.read().await;
+                        // TODO: This needs to be handled better
+                        let file_name = file.file_name();
+                        let file_ext = Path::new(&file_name).extension().unwrap().to_str().unwrap();
+                        //message_sender.send(Message::LogFile(file_content)).ok();
                         message_sender
-                            .send(Message::FileOpen(file.file_name(), file_content))
+                            .send(Message::FileOpen(FileInfo {
+                                name: file.file_name(),
+                                content: Data::from_raw(&file_content, file_ext),
+                            }))
                             .ok();
                     }
                 });
             }
+            // Load in demo data
             if demo_button.clicked() {
                 self.concatenate_data = true;
                 let message_sender = self.message_channel.0.clone();
@@ -200,7 +205,10 @@ impl eframe::App for GageStudyApp {
                     let file_name = "OperatorA.json".to_string();
                     let file_content = crate::DEMO_DATA_A;
                     message_sender
-                        .send(Message::FileOpen(file_name, file_content.to_string()))
+                        .send(Message::FileOpen(FileInfo {
+                            name: file_name,
+                            content: Data::from_raw_json(&file_content.as_bytes()),
+                        }))
                         .ok();
                 });
                 let message_sender = self.message_channel.0.clone();
@@ -208,7 +216,10 @@ impl eframe::App for GageStudyApp {
                     let file_name = "OperatorB.json".to_string();
                     let file_content = crate::DEMO_DATA_B;
                     message_sender
-                        .send(Message::FileOpen(file_name, file_content.to_string()))
+                        .send(Message::FileOpen(FileInfo {
+                            name: file_name,
+                            content: Data::from_raw_json(&file_content.as_bytes()),
+                        }))
                         .ok();
                 });
                 let message_sender = self.message_channel.0.clone();
@@ -216,14 +227,16 @@ impl eframe::App for GageStudyApp {
                     let file_name = "OperatorC.json".to_string();
                     let file_content = crate::DEMO_DATA_C;
                     message_sender
-                        .send(Message::FileOpen(file_name, file_content.to_string()))
+                        .send(Message::FileOpen(FileInfo {
+                            name: file_name,
+                            content: Data::from_raw_json(&file_content.as_bytes()),
+                        }))
                         .ok();
                 });
             }
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
             egui::warn_if_debug_build(ui);
             ui.heading("Gage Study Analysis");
             ui.label("");
@@ -232,7 +245,9 @@ impl eframe::App for GageStudyApp {
             ui.label("\t2. Click the \"Calculate...\" button");
             ui.label("");
             ui.label("JSON data format:");
-            ui.label(RichText::new(r#"
+            ui.label(
+                RichText::new(
+                    r#"
 {
     "name": string,
     "part": string,
@@ -240,11 +255,13 @@ impl eframe::App for GageStudyApp {
     "replicate": integer,
     "measured": float,
     "nominal": float
-}"#
+}"#,
                 )
                 .monospace()
                 .color(Color32::GREEN)
-                .background_color(Color32::TRANSPARENT));
+                .background_color(Color32::TRANSPARENT),
+            );
+            ui.label(String::from_utf8(self.msg.clone()).unwrap().as_str());
         });
 
         DataTableView::default().show(ctx, &self.dataset, &mut (!self.dataset.is_empty()));
@@ -278,7 +295,7 @@ use std::future::Future;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn execute<F: Future<Output = ()> + Send + 'static>(f: F) {
-    // this is stupid... use any executor of your choice instead
+    // TODO: make custom executor
     std::thread::spawn(move || futures::executor::block_on(f));
 }
 #[cfg(target_arch = "wasm32")]

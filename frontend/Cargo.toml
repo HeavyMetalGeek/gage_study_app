@@ -1,6 +1,6 @@
 [package]
 name = "frontend"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
 rust-version = "1.65"
 
@@ -19,10 +19,12 @@ futures = "0.3.25"
 anyhow = "1.0.68"
 wasm-logger = "0.2.0"
 log = "0.4.17"
+csv = "1.1.6"
 
 [dependencies.gage_study]
-git = "https://github.com/HeavyMetalGeek/gage_study.git"
-tag = "v0.0.1"
+path = "/home/mmckenna/Development/rust/gage_study"
+#git = "https://github.com/HeavyMetalGeek/gage_study.git"
+#tag = "v0.0.1"
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
