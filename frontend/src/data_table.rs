@@ -1,3 +1,4 @@
+use eframe::egui;
 use gage_study::data::Data;
 /// Shows off a table with dynamic layout
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]

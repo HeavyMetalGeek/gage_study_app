@@ -1,7 +1,7 @@
 use crate::{
     AnovaTableView, DataTableView, GageEvalTableView, PlotType, StudyPlots, VarCompTableView,
 };
-use egui::{Color32, RichText};
+use eframe::egui::{self, Color32, RichText};
 use gage_study::{anova::Anova, data::Data, dataset::DataSet, study_evaluation::StudyEvaluation};
 use rfd;
 use std::path::Path;
@@ -108,7 +108,7 @@ impl eframe::App for GageStudyApp {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
-                        _frame.close();
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                     }
                 });
             });

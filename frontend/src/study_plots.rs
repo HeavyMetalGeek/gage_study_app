@@ -1,5 +1,6 @@
 use crate::Statistics;
-use egui::widgets::plot::{BoxElem, BoxPlot, BoxSpread, Legend, Line, MarkerShape, Plot, Points};
+use egui_plot::{BoxElem, BoxPlot, BoxSpread, Legend, Line, MarkerShape, Plot, Points};
+use eframe::egui;
 use gage_study::dataset::DataSet;
 use std::{collections::HashMap, collections::HashSet, ops::RangeInclusive};
 
@@ -109,8 +110,8 @@ impl<'a> StudyPlots<'a> {
             .auto_bounds_x()
             .auto_bounds_y()
             .x_axis_formatter(move |x, _range: &RangeInclusive<f64>| {
-                if x > 0.0 && x as usize - 1 < part_vec.len() {
-                    let idx = x as usize - 1;
+                if x.value > 0.0 && x.value as usize - 1 < part_vec.len() {
+                    let idx = x.value as usize - 1;
                     format!("Part {}", part_vec[idx])
                 } else {
                     "".to_string()
@@ -158,14 +159,14 @@ impl<'a> StudyPlots<'a> {
             .legend(Legend::default())
             .auto_bounds_x()
             .auto_bounds_y()
-            .x_axis_formatter(move |x, _range: &RangeInclusive<f64>| {
-                if x > 0.0 && x as usize - 1 < op_vec.len() {
-                    let idx = x as usize - 1;
-                    format!("{}", op_vec[idx])
-                } else {
-                    "".to_string()
-                }
-            })
+            //.x_axis_formatter(move |x, _range: &RangeInclusive<f64>| {
+            //    if x.value > 0.0 && x.value as usize - 1 < op_vec.len() {
+            //        let idx = x.value as usize - 1;
+            //        format!("{}", op_vec[idx])
+            //    } else {
+            //        "".to_string()
+            //    }
+            //})
             .show(ui, |plot_ui| {
                 for boxx in boxes.into_iter() {
                     plot_ui.box_plot(boxx);
