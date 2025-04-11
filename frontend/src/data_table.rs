@@ -1,6 +1,6 @@
+use eframe::egui;
 use gage_study::data::Data;
 /// Shows off a table with dynamic layout
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct DataTableView {
     pub striped: bool,
     pub resizable: bool,
@@ -88,19 +88,29 @@ impl DataTableView {
         table
             .header(20.0, |mut header| {
                 header.col(|ui| {
-                    ui.strong("Row");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Row");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("Part");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Part");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("Operator");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Operator");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("Replicate");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Replicate");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("Measured");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Measured");
+                    });
                 });
             })
             .body(|mut body| {

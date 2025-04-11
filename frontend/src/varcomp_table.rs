@@ -1,13 +1,13 @@
+use eframe::egui;
 use gage_study::study_evaluation::StudyEvaluation;
 /// Shows off a table with dynamic layout
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct VarCompTableView<'a> {
     pub striped: bool,
     pub resizable: bool,
     pub dataset: &'a Option<StudyEvaluation>,
 }
 
-impl<'a> Default for VarCompTableView<'a> {
+impl Default for VarCompTableView<'_> {
     fn default() -> Self {
         Self {
             striped: true,
@@ -81,13 +81,22 @@ impl<'a> VarCompTableView<'a> {
         table
             .header(40.0, |mut header| {
                 header.col(|ui| {
-                    ui.strong("\nSource");
+                    ui.vertical_centered(|ui| {
+                        ui.add_space(10.0);
+                        ui.strong("Source");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("\nVarComp");
+                    ui.vertical_centered(|ui| {
+                        ui.add_space(10.0);
+                        ui.strong("VarComp");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("%Contribution\n(of VarComp)");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("%Contribution");
+                        ui.strong("(of VarComp)");
+                    });
                 });
             })
             .body(|mut body| {
@@ -95,7 +104,7 @@ impl<'a> VarCompTableView<'a> {
                     let row_height = 18.0;
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Total Gage R&R"));
+                            ui.label("Total Gage R&R");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>9.7}", study.total_gagerr.varcomp));
@@ -109,7 +118,7 @@ impl<'a> VarCompTableView<'a> {
                     });
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Repeatability"));
+                            ui.label("Repeatability");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>9.7}", study.total_gagerr.repeatability.varcomp));
@@ -126,7 +135,7 @@ impl<'a> VarCompTableView<'a> {
                     if study.use_interaction {
                         body.row(row_height, |mut row| {
                             row.col(|ui| {
-                                ui.label(format!("{}", "Reproducibility"));
+                                ui.label("Reproducibility");
                             });
                             row.col(|ui| {
                                 ui.label(format!(
@@ -146,7 +155,7 @@ impl<'a> VarCompTableView<'a> {
                     }
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Part-to-Part"));
+                            ui.label("Part-to-Part");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>9.7}", study.part_to_part.varcomp));
@@ -160,17 +169,13 @@ impl<'a> VarCompTableView<'a> {
                     });
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Total Variation"));
+                            ui.label("Total Variation");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>9.7}", study.total_variation.varcomp));
                         });
                         row.col(|ui| {
-                            ui.label(format!(
-                                "{:>6.2}",
-                                study.total_variation.varcomp / study.total_variation.varcomp
-                                    * 100.0
-                            ));
+                            ui.label(format!("{:>6.2}", 100.0));
                         });
                     });
                 }

@@ -1,13 +1,13 @@
+use eframe::egui;
 use gage_study::anova::Anova;
 /// Shows off a table with dynamic layout
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct AnovaTableView<'a> {
     pub striped: bool,
     pub resizable: bool,
     pub dataset: &'a Option<Anova>,
 }
 
-impl<'a> Default for AnovaTableView<'a> {
+impl Default for AnovaTableView<'_> {
     fn default() -> Self {
         Self {
             striped: true,
@@ -94,22 +94,34 @@ impl<'a> AnovaTableView<'a> {
         table
             .header(20.0, |mut header| {
                 header.col(|ui| {
-                    ui.strong(format!("{}", "Source"));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Source");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong(format!("{}", "df"));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("df");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong(format!("{}", "SS"));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("SS");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong(format!("{}", "MS"));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("MS");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong(format!("{}", "F"));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("F");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong(format!("{}", "p"));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("p");
+                    });
                 });
             })
             .body(|mut body| {
@@ -132,7 +144,7 @@ impl<'a> AnovaTableView<'a> {
                             ui.label(format!("{:>9.5}", anova.f_parts));
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", "n/a"));
+                            ui.label("n/a");
                         });
                     });
                     body.row(row_height, |mut row| {
@@ -152,7 +164,7 @@ impl<'a> AnovaTableView<'a> {
                             ui.label(format!("{:>9.5}", anova.f_operators));
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", "n/a"));
+                            ui.label("n/a");
                         });
                     });
                     if anova.use_interaction {
@@ -173,7 +185,7 @@ impl<'a> AnovaTableView<'a> {
                                 ui.label(format!("{:>9.5}", anova.f_part_operator));
                             });
                             row.col(|ui| {
-                                ui.label(format!("{}", ""));
+                                ui.label("");
                             });
                         });
                     }
@@ -191,10 +203,10 @@ impl<'a> AnovaTableView<'a> {
                             ui.label(format!("{:>9.5}", anova.meansq_repeatability));
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", ""));
+                            ui.label("");
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", ""));
+                            ui.label("");
                         });
                     });
                     body.row(row_height, |mut row| {
@@ -208,13 +220,13 @@ impl<'a> AnovaTableView<'a> {
                             ui.label(format!("{:>9.5}", anova.sumsq_total));
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", ""));
+                            ui.label("");
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", ""));
+                            ui.label("");
                         });
                         row.col(|ui| {
-                            ui.label(format!("{}", ""));
+                            ui.label("");
                         });
                     });
                 }

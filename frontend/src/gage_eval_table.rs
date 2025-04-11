@@ -1,13 +1,13 @@
+use eframe::egui;
 use gage_study::study_evaluation::StudyEvaluation;
 /// Shows off a table with dynamic layout
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct GageEvalTableView<'a> {
     pub striped: bool,
     pub resizable: bool,
     pub dataset: &'a Option<StudyEvaluation>,
 }
 
-impl<'a> Default for GageEvalTableView<'a> {
+impl Default for GageEvalTableView<'_> {
     fn default() -> Self {
         Self {
             striped: true,
@@ -95,19 +95,34 @@ impl<'a> GageEvalTableView<'a> {
         table
             .header(40.0, |mut header| {
                 header.col(|ui| {
-                    ui.strong("\nSource");
+                    ui.vertical_centered(|ui| {
+                        ui.add_space(10.0);
+                        ui.strong("Source");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("\nStdDev (SD)");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("StdDev");
+                        ui.strong("(SD)");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong(format!("Study Var\n({} x SD)", proc_var));
+                    ui.vertical_centered(|ui| {
+                        ui.strong("Study Var");
+                        ui.strong(format!("({} x SD)", proc_var));
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("%Study Var\n(%SV)");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("%Study Var");
+                        ui.strong("(%SV)");
+                    });
                 });
                 header.col(|ui| {
-                    ui.strong("%Tolerance\n(SV/Tol)");
+                    ui.vertical_centered(|ui| {
+                        ui.strong("%Tolerance");
+                        ui.strong("(SV/Tol)");
+                    });
                 });
             })
             .body(|mut body| {
@@ -115,7 +130,7 @@ impl<'a> GageEvalTableView<'a> {
                     let row_height = 18.0;
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Total Gage R&R"));
+                            ui.label("Total Gage R&R");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>10.6}", study.total_gagerr.stddev));
@@ -143,7 +158,7 @@ impl<'a> GageEvalTableView<'a> {
                     });
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Repeatability"));
+                            ui.label("Repeatability");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>10.6}", study.total_gagerr.repeatability.stddev));
@@ -174,7 +189,7 @@ impl<'a> GageEvalTableView<'a> {
                     if study.use_interaction {
                         body.row(row_height, |mut row| {
                             row.col(|ui| {
-                                ui.label(format!("{}", "Reproducibility"));
+                                ui.label("Reproducibility");
                             });
                             row.col(|ui| {
                                 ui.label(format!(
@@ -210,7 +225,7 @@ impl<'a> GageEvalTableView<'a> {
                     }
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Part-to-Part"));
+                            ui.label("Part-to-Part");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>10.6}", study.part_to_part.stddev));
@@ -238,7 +253,7 @@ impl<'a> GageEvalTableView<'a> {
                     });
                     body.row(row_height, |mut row| {
                         row.col(|ui| {
-                            ui.label(format!("{}", "Total Variation"));
+                            ui.label("Total Variation");
                         });
                         row.col(|ui| {
                             ui.label(format!("{:>10.6}", study.total_variation.stddev));
@@ -250,10 +265,7 @@ impl<'a> GageEvalTableView<'a> {
                             ));
                         });
                         row.col(|ui| {
-                            ui.label(format!(
-                                "{:>10.2}",
-                                study.total_variation.stddev / study.total_variation.stddev * 100.0
-                            ));
+                            ui.label(format!("{:>10.2}", 100.0));
                         });
                         row.col(|ui| {
                             ui.label(format!(

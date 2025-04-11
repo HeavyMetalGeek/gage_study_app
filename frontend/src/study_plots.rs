@@ -1,5 +1,6 @@
 use crate::Statistics;
-use egui::widgets::plot::{BoxElem, BoxPlot, BoxSpread, Legend, Line, MarkerShape, Plot, Points};
+use eframe::egui;
+use egui_plot::{BoxElem, BoxPlot, BoxSpread, Legend, Line, MarkerShape, Plot, Points};
 use gage_study::dataset::DataSet;
 use std::{collections::HashMap, collections::HashSet, ops::RangeInclusive};
 
@@ -8,13 +9,12 @@ pub enum PlotType {
     OperatorMeasurement,
 }
 
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct StudyPlots<'a> {
     pub dataset: Option<&'a DataSet>,
     pub plot_type: PlotType,
 }
 
-impl<'a> Default for StudyPlots<'a> {
+impl Default for StudyPlots<'_> {
     fn default() -> Self {
         Self {
             dataset: None,
@@ -52,8 +52,8 @@ impl<'a> StudyPlots<'a> {
     pub fn ui(&mut self, ui: &mut egui::Ui) {
         if let Some(dataset) = self.dataset {
             match self.plot_type {
-                PlotType::PartMeasurement => Self::part_measurement_plot(ui, &dataset),
-                PlotType::OperatorMeasurement => Self::operator_measurement_plot(ui, &dataset),
+                PlotType::PartMeasurement => Self::part_measurement_plot(ui, dataset),
+                PlotType::OperatorMeasurement => Self::operator_measurement_plot(ui, dataset),
             };
         }
     }
@@ -67,7 +67,7 @@ impl<'a> StudyPlots<'a> {
             .map(|p| p.id.to_owned())
             .collect::<HashSet<String>>();
         let mut part_vec = Vec::from_iter(part_hs);
-        part_vec.sort_by(|a, b| a.cmp(&b));
+        part_vec.sort();
         // Map part ids to sorted indices
         let part_map = part_vec
             .iter()
@@ -91,26 +91,24 @@ impl<'a> StudyPlots<'a> {
         }
         avg_points.sort_by(|a, b| a[0].partial_cmp(&b[0]).unwrap());
         // Create markers
-        let markers = Points::new(points)
+        let markers = Points::new("part", points)
             .shape(MarkerShape::Circle)
             .radius(4.0)
             .filled(false)
             .color(egui::Color32::GRAY);
-        let avg_markers = Points::new(avg_points.clone())
+        let avg_markers = Points::new("part", avg_points.clone())
             .shape(MarkerShape::Circle)
             .radius(4.0)
             .highlight(true)
             .color(egui::Color32::BLUE);
-        let avg_line = Line::new(avg_points)
+        let avg_line = Line::new("part", avg_points)
             .color(egui::Color32::BLUE)
             .highlight(true);
         Plot::new("part_msmt")
             .legend(Legend::default())
-            .auto_bounds_x()
-            .auto_bounds_y()
             .x_axis_formatter(move |x, _range: &RangeInclusive<f64>| {
-                if x > 0.0 && x as usize - 1 < part_vec.len() {
-                    let idx = x as usize - 1;
+                if x.value > 0.0 && x.value as usize - 1 < part_vec.len() {
+                    let idx = x.value as usize - 1;
                     format!("Part {}", part_vec[idx])
                 } else {
                     "".to_string()
@@ -134,7 +132,7 @@ impl<'a> StudyPlots<'a> {
             .map(|p| p.id.to_owned())
             .collect::<HashSet<String>>();
         let mut op_vec = Vec::from_iter(op_hs);
-        op_vec.sort_by(|a, b| a.cmp(&b));
+        op_vec.sort();
         // Map part ids to sorted indices
         let op_map = op_vec
             .iter()
@@ -151,17 +149,15 @@ impl<'a> StudyPlots<'a> {
                 BoxSpread::new(stats.min, stats.q1, stats.median, stats.q3, stats.max),
             )
             .name(format!("Operator {}", op.id).as_str());
-            boxes.push(BoxPlot::new(vec![box_elem]).name(format!("Operator {}", op.id).as_str()));
+            boxes.push(BoxPlot::new(format!("Operator {}", op.id), vec![box_elem]));
         }
         // Create markers
         Plot::new("operator_msmt")
             .legend(Legend::default())
-            .auto_bounds_x()
-            .auto_bounds_y()
             .x_axis_formatter(move |x, _range: &RangeInclusive<f64>| {
-                if x > 0.0 && x as usize - 1 < op_vec.len() {
-                    let idx = x as usize - 1;
-                    format!("{}", op_vec[idx])
+                if x.value.floor() >= 1.0 && (x.value.floor() as usize - 1 < op_vec.len()) {
+                    let idx = x.value.floor() as usize - 1;
+                    op_vec[idx].to_string()
                 } else {
                     "".to_string()
                 }

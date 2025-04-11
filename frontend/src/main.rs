@@ -1,21 +1,23 @@
-#![warn(clippy::all, rust_2018_idioms)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
+use eframe::egui;
 
 // When compiling natively:
 #[cfg(not(target_arch = "wasm32"))]
-fn main() {
+fn main() -> eframe::Result {
     // Log to stdout (if you run with `RUST_LOG=debug`).
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::WARN)
+        .finish();
 
     let native_options = eframe::NativeOptions {
-        drag_and_drop_support: true,
+        viewport: egui::ViewportBuilder::default().with_inner_size([960.0, 540.0]),
         ..Default::default()
     };
     eframe::run_native(
-        "eframe template",
+        "Gage R&R",
         native_options,
-        Box::new(|cc| Box::new(frontend::GageStudyApp::new(cc))),
-    );
+        Box::new(|cc| Ok(Box::new(frontend::GageStudyApp::new(cc)))),
+    )
 }
 
 // when compiling to web using trunk.

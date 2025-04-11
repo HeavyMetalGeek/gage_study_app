@@ -1,9 +1,9 @@
 use crate::{
     AnovaTableView, DataTableView, GageEvalTableView, PlotType, StudyPlots, VarCompTableView,
+    EXAMPLE_JSON,
 };
-use egui::{Color32, RichText};
+use eframe::egui::{self, Color32, RichText};
 use gage_study::{anova::Anova, data::Data, dataset::DataSet, study_evaluation::StudyEvaluation};
-use rfd;
 use std::path::Path;
 
 pub enum Message {
@@ -79,26 +79,19 @@ impl eframe::App for GageStudyApp {
 
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         ctx.request_repaint();
-        loop {
-            match self.message_channel.1.try_recv() {
-                Ok(msg) => {
-                    match msg {
-                        Message::FileOpen(f) => {
-                            if self.concatenate_data {
-                                self.dataset.extend(f.content);
-                                self.open_files.push(f.name);
-                            } else {
-                                self.dataset = f.content;
-                                self.open_files = vec![f.name];
-                            };
-                        }
-                        Message::LogFile(bytes) => {
-                            self.msg = bytes;
-                        }
+        while let Ok(msg) = self.message_channel.1.try_recv() {
+            match msg {
+                Message::FileOpen(f) => {
+                    if self.concatenate_data {
+                        self.dataset.extend(f.content);
+                        self.open_files.push(f.name);
+                    } else {
+                        self.dataset = f.content;
+                        self.open_files = vec![f.name];
                     };
                 }
-                Err(_) => {
-                    break;
+                Message::LogFile(bytes) => {
+                    self.msg = bytes;
                 }
             };
         }
@@ -108,7 +101,7 @@ impl eframe::App for GageStudyApp {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
-                        _frame.close();
+                        ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
                     }
                 });
             });
@@ -131,7 +124,7 @@ impl eframe::App for GageStudyApp {
                 ui.add(
                     egui::DragValue::new(&mut self.tolerance)
                         .speed(0.1)
-                        .clamp_range(0..=99),
+                        .range(0..=99),
                 );
             });
             ui.horizontal(|ui| {
@@ -139,20 +132,19 @@ impl eframe::App for GageStudyApp {
                 ui.add(
                     egui::DragValue::new(&mut self.process_variation)
                         .speed(0.1)
-                        .clamp_range(0..=99),
+                        .range(0..=99),
                 );
             });
             ui.vertical(|ui| {
-                ui.set_enabled(!self.dataset.is_empty());
-                if ui.button("Calculate...").clicked() {
+                if ui
+                    .add_enabled(!self.dataset.is_empty(), egui::Button::new("Calculate..."))
+                    .clicked()
+                {
                     self.gage_dataset = match self.dataset.len() {
                         len if len > 0 => Some(DataSet::from_data("ui_data", &self.dataset)),
                         _ => None,
                     };
-                    self.anova = match &self.gage_dataset {
-                        Some(gds) => Some(Anova::from_data(gds)),
-                        None => None,
-                    };
+                    self.anova = self.gage_dataset.as_ref().map(Anova::from_data);
                     self.study_evaluation = match &self.anova {
                         Some(a) => Some(
                             StudyEvaluation::from_anova(a)
@@ -202,34 +194,31 @@ impl eframe::App for GageStudyApp {
                 self.concatenate_data = true;
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
-                    let file_name = "OperatorA.json".to_string();
                     let file_content = crate::DEMO_DATA_A;
                     message_sender
                         .send(Message::FileOpen(FileInfo {
-                            name: file_name,
-                            content: Data::from_raw_json(&file_content.as_bytes()),
+                            name: "OperatorA.json".to_string(),
+                            content: Data::from_raw_json(file_content.as_bytes()),
                         }))
                         .ok();
                 });
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
-                    let file_name = "OperatorB.json".to_string();
                     let file_content = crate::DEMO_DATA_B;
                     message_sender
                         .send(Message::FileOpen(FileInfo {
-                            name: file_name,
-                            content: Data::from_raw_json(&file_content.as_bytes()),
+                            name: "OperatorB.json".to_string(),
+                            content: Data::from_raw_json(file_content.as_bytes()),
                         }))
                         .ok();
                 });
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
-                    let file_name = "OperatorC.json".to_string();
                     let file_content = crate::DEMO_DATA_C;
                     message_sender
                         .send(Message::FileOpen(FileInfo {
-                            name: file_name,
-                            content: Data::from_raw_json(&file_content.as_bytes()),
+                            name: "OperatorC.json".to_string(),
+                            content: Data::from_raw_json(file_content.as_bytes()),
                         }))
                         .ok();
                 });
@@ -246,20 +235,10 @@ impl eframe::App for GageStudyApp {
             ui.label("");
             ui.label("JSON data format:");
             ui.label(
-                RichText::new(
-                    r#"
-{
-    "name": string,
-    "part": string,
-    "operator: string,
-    "replicate": integer,
-    "measured": float,
-    "nominal": float
-}"#,
-                )
-                .monospace()
-                .color(Color32::GREEN)
-                .background_color(Color32::TRANSPARENT),
+                RichText::new(EXAMPLE_JSON)
+                    .monospace()
+                    .color(Color32::GREEN)
+                    .background_color(Color32::TRANSPARENT),
             );
             ui.label(String::from_utf8(self.msg.clone()).unwrap().as_str());
         });

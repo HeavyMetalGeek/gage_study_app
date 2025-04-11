@@ -1,5 +1,14 @@
 [workspace]
+resolver = "2"
 members = [
     "frontend",
     "backend",
 ]
+
+# fast and small wasm
+[profile.release]
+opt-level = 2
+
+# Optimize all dependencies even in debug builds:
+[profile.dev.package."*"]
+opt-level = 2

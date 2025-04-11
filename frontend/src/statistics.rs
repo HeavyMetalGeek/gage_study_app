@@ -28,12 +28,12 @@ impl Statistics {
         Self::default()
     }
 
-    pub fn from_values<T>(mut self, values: &Vec<T>) -> Self
+    pub fn from_values<T>(mut self, values: &[T]) -> Self
     where
         T: PartialOrd + Into<f64> + Clone,
     {
-        let mut stat_values = values.clone();
-        stat_values.sort_by(|a, b| a.partial_cmp(&b).unwrap());
+        let mut stat_values = values.to_owned();
+        stat_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
         let len = stat_values.len();
         if len < 2 {
             return self;
@@ -45,8 +45,7 @@ impl Statistics {
             .fold(0.0, |acc, v: &T| acc + v.to_owned().into())
             / len as f64;
         self.median = if len % 2 == 0 {
-            (stat_values[len / 2].clone().into() + stat_values[len / 2 + 1].clone().into())
-                / 2 as f64
+            (stat_values[len / 2].clone().into() + stat_values[len / 2 + 1].clone().into()) / 2_f64
         } else {
             stat_values[len / 2].clone().into()
         };
