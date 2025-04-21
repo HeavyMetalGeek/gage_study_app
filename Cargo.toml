@@ -4,6 +4,9 @@ members = [
     "frontend",
     "backend",
 ]
+default-members = [
+    "frontend",
+]
 
 # fast and small wasm
 [profile.release]
@@ -12,3 +15,6 @@ opt-level = 2
 # Optimize all dependencies even in debug builds:
 [profile.dev.package."*"]
 opt-level = 2
+
+[workspace.dependencies]
+gage_study = { version = "0.0.3", git = "https://github.com/HeavyMetalGeek/gage_study.git", branch = "master" }

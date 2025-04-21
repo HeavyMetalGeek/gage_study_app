@@ -107,8 +107,8 @@ impl<'a> StudyPlots<'a> {
         Plot::new("part_msmt")
             .legend(Legend::default())
             .x_axis_formatter(move |x, _range: &RangeInclusive<f64>| {
-                if x.value > 0.0 && x.value as usize - 1 < part_vec.len() {
-                    let idx = x.value as usize - 1;
+                if x.value.floor() >= 1.0 && (x.value.floor() as usize - 1 < part_vec.len()) {
+                    let idx = x.value.floor() as usize - 1;
                     format!("Part {}", part_vec[idx])
                 } else {
                     "".to_string()
