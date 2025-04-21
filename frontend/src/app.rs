@@ -1,9 +1,10 @@
 use crate::{
-    AnovaTableView, DataTableView, GageEvalTableView, PlotType, StudyPlots, VarCompTableView,
-    EXAMPLE_JSON,
+    AnovaTableView, DataTableView, EXAMPLE_JSON, GageEvalTableView, PlotType, StudyPlots,
+    VarCompTableView,
 };
 use eframe::egui::{self, Color32, RichText};
 use gage_study::{anova::Anova, data::Data, dataset::DataSet, study_evaluation::StudyEvaluation};
+use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 pub enum Message {
@@ -17,8 +18,8 @@ pub struct FileInfo {
     pub content: Vec<Data>,
 }
 
-#[derive(serde::Deserialize, serde::Serialize)]
 // if we add new fields, give them default values when deserializing old state
+#[derive(Deserialize, Serialize)]
 #[serde(default)]
 pub struct GageStudyApp {
     label: String,
@@ -180,12 +181,19 @@ impl eframe::App for GageStudyApp {
                         let file_name = file.file_name();
                         let file_ext = Path::new(&file_name).extension().unwrap().to_str().unwrap();
                         //message_sender.send(Message::LogFile(file_content)).ok();
-                        message_sender
-                            .send(Message::FileOpen(FileInfo {
-                                name: file.file_name(),
-                                content: Data::from_raw(&file_content, file_ext),
-                            }))
-                            .ok();
+                        match Data::from_raw(&file_content, file_ext) {
+                            Ok(data) => {
+                                let _ = message_sender
+                                    .send(Message::FileOpen(FileInfo {
+                                        name: file.file_name(),
+                                        content: data,
+                                    }))
+                                    .map_err(|e| tracing::error!("Sender::send: {e:?}"));
+                            }
+                            Err(e) => {
+                                tracing::error!("Data::from_raw: {e:?}");
+                            }
+                        };
                     }
                 });
             }
@@ -195,32 +203,53 @@ impl eframe::App for GageStudyApp {
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
                     let file_content = crate::DEMO_DATA_A;
-                    message_sender
-                        .send(Message::FileOpen(FileInfo {
-                            name: "OperatorA.json".to_string(),
-                            content: Data::from_raw_json(file_content.as_bytes()),
-                        }))
-                        .ok();
+                    match Data::from_raw_json(file_content.as_bytes()) {
+                        Ok(data) => {
+                            let _ = message_sender
+                                .send(Message::FileOpen(FileInfo {
+                                    name: "OperatorA.json".to_string(),
+                                    content: data,
+                                }))
+                                .map_err(|e| tracing::error!("Sender::send: {e:?}"));
+                        }
+                        Err(e) => {
+                            tracing::error!("Data::from_raw_json: {e:?}");
+                        }
+                    };
                 });
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
                     let file_content = crate::DEMO_DATA_B;
-                    message_sender
-                        .send(Message::FileOpen(FileInfo {
-                            name: "OperatorB.json".to_string(),
-                            content: Data::from_raw_json(file_content.as_bytes()),
-                        }))
-                        .ok();
+                    match Data::from_raw_json(file_content.as_bytes()) {
+                        Ok(data) => {
+                            let _ = message_sender
+                                .send(Message::FileOpen(FileInfo {
+                                    name: "OperatorB.json".to_string(),
+                                    content: data,
+                                }))
+                                .map_err(|e| tracing::error!("Sender::send: {e:?}"));
+                        }
+                        Err(e) => {
+                            tracing::error!("Data::from_raw_json: {e:?}");
+                        }
+                    };
                 });
                 let message_sender = self.message_channel.0.clone();
                 execute(async move {
                     let file_content = crate::DEMO_DATA_C;
-                    message_sender
-                        .send(Message::FileOpen(FileInfo {
-                            name: "OperatorC.json".to_string(),
-                            content: Data::from_raw_json(file_content.as_bytes()),
-                        }))
-                        .ok();
+                    match Data::from_raw_json(file_content.as_bytes()) {
+                        Ok(data) => {
+                            let _ = message_sender
+                                .send(Message::FileOpen(FileInfo {
+                                    name: "OperatorC.json".to_string(),
+                                    content: data,
+                                }))
+                                .map_err(|e| tracing::error!("Sender::send: {e:?}"));
+                        }
+                        Err(e) => {
+                            tracing::error!("Data::from_raw_json: {e:?}");
+                        }
+                    };
                 });
             }
         });
