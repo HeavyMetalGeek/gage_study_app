@@ -1,16 +1,27 @@
 use axum::Router;
-use axum_extra::routing::SpaRouter;
-use tower::limit::ConcurrencyLimitLayer;
+use tokio::net::TcpListener;
+use tower_http::services::{ServeDir, ServeFile};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
-    let spa = SpaRouter::new("/", "dist");
-    let app = Router::new()
-        .merge(spa)
-        .route_layer(ConcurrencyLimitLayer::new(10));
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                format!(
+                    "{}=debug,tower_http=debug,axum::rejection=trace",
+                    env!("CARGO_CRATE_NAME")
+                )
+                .into()
+            }),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let app_files = ServeDir::new("dist").fallback(ServeFile::new("dist/index.html"));
+    let app = Router::new().fallback_service(app_files);
+
+    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    tracing::debug!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
 }
