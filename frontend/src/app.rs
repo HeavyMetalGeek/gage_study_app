@@ -1,6 +1,6 @@
 use crate::{
-    AnovaTableView, DataTableView, EXAMPLE_JSON, GageEvalTableView, PlotType, StudyPlots,
-    VarCompTableView,
+    AnovaTableView, DataTableView, EXAMPLE_CSV, EXAMPLE_JSON, GageEvalTableView, PlotType,
+    StudyPlots, VarCompTableView,
 };
 use eframe::egui::{self, Color32, RichText};
 use gage_study::{anova::Anova, data::Data, dataset::DataSet, study_evaluation::StudyEvaluation};
@@ -265,6 +265,13 @@ impl eframe::App for GageStudyApp {
             ui.label("JSON data format:");
             ui.label(
                 RichText::new(EXAMPLE_JSON)
+                    .monospace()
+                    .color(Color32::GREEN)
+                    .background_color(Color32::TRANSPARENT),
+            );
+            ui.label("CSV data format:");
+            ui.label(
+                RichText::new(EXAMPLE_CSV)
                     .monospace()
                     .color(Color32::GREEN)
                     .background_color(Color32::TRANSPARENT),
