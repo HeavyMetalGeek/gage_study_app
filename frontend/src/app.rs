@@ -269,6 +269,7 @@ impl eframe::App for GageStudyApp {
                     .color(Color32::GREEN)
                     .background_color(Color32::TRANSPARENT),
             );
+            ui.label("");
             ui.label("CSV data format:");
             ui.label(
                 RichText::new(EXAMPLE_CSV)
