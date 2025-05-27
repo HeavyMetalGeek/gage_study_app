@@ -28,3 +28,9 @@ static EXAMPLE_JSON: &str = r#"
     "measured": float,
     "nominal": float
 }"#;
+static EXAMPLE_CSV: &str = r#"
+name,part,operator,replicate,measured,nominal,
+example A10,part 1,operator A,1,2.78,3.0,
+example A11,part 1,operator A,1,2.98,3.0,
+example A12,part 1,operator A,1,2.99,3.0,
+"#;
